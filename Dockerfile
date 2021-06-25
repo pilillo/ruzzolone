@@ -35,5 +35,8 @@ ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
 RUN chmod +x /tini
 ENTRYPOINT ["/tini", "--"]
 
+# optional dependencies
+# RUN apt install osm2pgsql
+
 COPY entrypoint.sh /usr/local/bin
 CMD ["entrypoint.sh"]

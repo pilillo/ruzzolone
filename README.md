@@ -8,6 +8,11 @@ A postgis & pgrouting DB with routes imported from OSM data
 docker build -t ruzzolone .
 ```
 
+or a variant re-installing postgis to get also raster support and CLI tools:
+```
+docker build -t ruzzolone-raster -f Dockerfile.raster .
+```
+
 The following build args can be provided (default values provided aside):
 * POSTGRES_MAJOR=13
 * POSTGIS_MAJOR=3.1
@@ -18,8 +23,18 @@ The following build args can be provided (default values provided aside):
 
 
 ## Run Example
+To start the base pgrouting image:
 ```
 docker run --rm --name my-pgrouting -p 5432:5432 -e POSTGRES_USER=user -e POSTGRES_PASSWORD=secret ruzzolone:latest
+```
+
+or the raster variant (which imports DEM data provided as tif file in the data folder):
+```
+docker run --rm --name my-pgrouting \
+-p 5432:5432 -e POSTGRES_USER=user -e POSTGRES_PASSWORD=secret \
+-e SRID=0 -e TILE_SIZE=200x200 \
+--mount type=bind,source="$(pwd)"/data,target=/data \
+ruzzolone-raster:latest
 ```
 
 Unless modified, the build process will download, convert and load the route map of Iceland.
@@ -64,3 +79,10 @@ which will return:
 | 17    | 44108 | "Listabraut" | 0.0002 | 498.14 |
 | 18    | 44109 |              | 0.0000 | 498.14 |
 ```
+
+## Additional references
+
+### DEM Data and use cases
+* https://opendem.info/link_dem.html
+* http://themagiscian.com/2016/11/28/dem-slope-calculations-bicycle-routing-postgis/
+* https://www.opentopodata.org/server/

@@ -1,0 +1,10 @@
+FROM ruzzolone:latest
+
+RUN apt-get update \
+    && apt-get install -y postgis \
+    && rm -rf /var/lib/apt/lists/*
+
+VOLUME ["/data"]
+
+ENV SRID=0
+ENV TILE_SIZE=200x200
