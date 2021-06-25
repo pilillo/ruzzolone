@@ -82,7 +82,19 @@ which will return:
 
 ## Additional references
 
-### DEM Data and use cases
+### PGRouting
+* https://pgrouting.org/documentation.html
+* https://live.osgeo.org/en/quickstart/pgrouting_quickstart.html
+* https://workshop.pgrouting.org/2.6/en/index.html
+* [Download OSM Data](http://download.geofabrik.de/)
+
+### DEM
 * https://opendem.info/link_dem.html
+* https://www.ngdc.noaa.gov/mgg/topo/gltiles.html
+* https://www.opentopodata.org/datasets/eudem/
+* https://land.copernicus.eu/imagery-in-situ/eu-dem/eu-dem-v1.1
+* https://www.opentopodata.org/datasets/aster30m_urls.txt
 * http://themagiscian.com/2016/11/28/dem-slope-calculations-bicycle-routing-postgis/
+* https://github.com/ajnisbet/opentopodata
 * https://www.opentopodata.org/server/
+* https://gis-ops.com/postgrest-postgis-api-tutorial-serve-digital-elevation-models/
