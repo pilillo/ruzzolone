@@ -21,14 +21,17 @@ RUN apk add --no-cache && \
     rm *.zip
 
 ADD $MAP_URL $INSTALLATION_DIR
+
 COPY osm2po.config $INSTALLATION_DIR
 RUN java -Xmx1024m -jar osm2po-core-${OSMPO_VERSION}-signed.jar cmd=c *.pbf
 
 FROM pgrouting/pgrouting:${POSTGRES_MAJOR}-${POSTGIS_MAJOR}-${PGROUTING_VERSION} as pgbase
 
 ARG INSTALLATION_DIR
+ENV INSTALLATION_DIR=$INSTALLATION_DIR
 WORKDIR $INSTALLATION_DIR
 COPY --from=javabase $INSTALLATION_DIR/osm/osm_2po_4pgr.sql .
+COPY --from=javabase $INSTALLATION_DIR/*.pbf .
 
 ENV TINI_VERSION v0.19.0
 ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
@@ -36,7 +39,8 @@ RUN chmod +x /tini
 ENTRYPOINT ["/tini", "--"]
 
 # optional dependencies
-# RUN apt install osm2pgsql
+RUN apt-get update &&\
+    apt-get install -y osm2pgsql
 
 COPY entrypoint.sh /usr/local/bin
 CMD ["entrypoint.sh"]

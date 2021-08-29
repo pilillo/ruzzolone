@@ -8,3 +8,4 @@ VOLUME ["/data"]
 
 ENV SRID=0
 ENV TILE_SIZE=200x200
+ENV SCHEMA_TABLE=public.dem

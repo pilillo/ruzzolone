@@ -8,11 +8,6 @@ A postgis & pgrouting DB with routes imported from OSM data
 docker build -t ruzzolone .
 ```
 
-or a variant re-installing postgis to get also raster support and CLI tools:
-```
-docker build -t ruzzolone-raster -f Dockerfile.raster .
-```
-
 The following build args can be provided (default values provided aside):
 * POSTGRES_MAJOR=13
 * POSTGIS_MAJOR=3.1
@@ -21,6 +16,10 @@ The following build args can be provided (default values provided aside):
 * OSMPO_VERSION=5.3.6
 * MAP_URL=https://download.geofabrik.de/europe/iceland-latest.osm.pbf
 
+after building this as a base, you can build its raster variant that re-installs postgis to get raster support and CLI tools:
+```
+docker build -t ruzzolone-raster -f Dockerfile.raster .
+```
 
 ## Run Example
 To start the base pgrouting image:
@@ -32,7 +31,7 @@ or the raster variant (which imports DEM data provided as tif file in the data f
 ```
 docker run --rm --name my-pgrouting \
 -p 5432:5432 -e POSTGRES_USER=user -e POSTGRES_PASSWORD=secret \
--e SRID=0 -e TILE_SIZE=200x200 \
+-e SRID=3035 -e TILE_SIZE=1000x1000 -e SCHEMA_TABLE=public.eu_dem \
 --mount type=bind,source="$(pwd)"/data,target=/data \
 ruzzolone-raster:latest
 ```
