@@ -1,0 +1,68 @@
+FROM ruzzolone:latest
+
+ARG PROJ_VERSION=7.2.0
+ARG GDAL_VERSION=3.3.0
+
+# optional dependencies ------------
+# osm2pgsql ---
+#RUN apt-get update &&\
+#    apt-get install -y osm2pgsql
+# imposm3 ---
+ARG IMPOSM=imposm3-0.4.0dev-20170519-3f00374-linux-x86-64.tar.gz
+ARG IMPOSMURL=https://imposm.org/static/rel/${IMPOSM}
+ADD ${IMPOSMURL} .
+
+RUN tar xzf ${IMPOSM} && \
+    IMPOSM_FOLDER=$(basename -- "$IMPOSM") && \
+    IMPOSM_FOLDERNAME=$(echo $IMPOSM_FOLDER | sed -e "s/.tar.gz//g") && \
+    mv ${IMPOSM_FOLDERNAME} imposm3 && \
+    chmod +x imposm3 && \
+    rm ${IMPOSM} 
+COPY imposm3.json .
+
+# gdal - https://mothergeo-py.readthedocs.io/en/latest/development/how-to/gdal-ubuntu-pkg.html
+#RUN apt-get update && \
+#    apt-get install -y software-properties-common && \
+#    rm -rf /var/lib/apt/lists/*
+
+#RUN add-apt-repository ppa:ubuntugis/ppa &&\
+
+# this installs GDAL 2.4.0 which has a bug - need to update!
+#RUN apt-get update &&\
+#    apt-get install -y unzip curl libpq-dev gdal-bin &&\
+#    rm -rf /var/lib/apt/lists/*
+
+RUN apt-get update \
+    && apt-get install -y wget curl unzip \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN wget https://download.osgeo.org/proj/proj-${PROJ_VERSION}.tar.gz \
+    && tar xvzf proj-${PROJ_VERSION}.tar.gz
+
+#proj-bin \
+RUN apt-get update \
+    && apt-get install -y \
+        build-essential g++ gfortran pkg-config \
+        sqlite3 libsqlite3-dev \
+        libtiff5 libtiff5-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN cd proj-${PROJ_VERSION} \
+    && ./configure \
+        --without-curl \
+        --with-libtiff=internal --with-rename-internal-libtiff-symbols \
+        --with-geotiff=internal --with-rename-internal-libgeotiff-symbols \
+    && make \
+    && make install
+
+# install gdal - takes ages to build, but you can see the world from the top!
+RUN wget -qO- http://download.osgeo.org/gdal/${GDAL_VERSION}/gdal-${GDAL_VERSION}.tar.gz \
+    | tar -xzC /usr/src \
+    && cd /usr/src/gdal-${GDAL_VERSION} \
+    && ./configure --with-proj=/usr/local/ \
+    && make install
+
+ENV LD_LIBRARY_PATH=/usr/local/lib
+
+COPY setup-tegola.sh $INSTALLATION_DIR
+CMD ["entrypoint.sh", "./setup-tegola.sh"]

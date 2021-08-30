@@ -20,7 +20,9 @@ RUN apk add --no-cache && \
     unzip osm2po-${OSMPO_VERSION} && \
     rm *.zip
 
+# download map if a url is provided, or expect one available locally otherwise
 ADD $MAP_URL $INSTALLATION_DIR
+#RUN [[ ! -z "${MAP_URL}" ]] && wget ${MAP_URL} -P ${INSTALLATION_DIR} || echo "Empty MAP_URL: skipping map download!"
 
 COPY osm2po.config $INSTALLATION_DIR
 RUN java -Xmx1024m -jar osm2po-core-${OSMPO_VERSION}-signed.jar cmd=c *.pbf
@@ -38,9 +40,8 @@ ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
 RUN chmod +x /tini
 ENTRYPOINT ["/tini", "--"]
 
-# optional dependencies
-RUN apt-get update &&\
-    apt-get install -y osm2pgsql
+ENV POSTGRES_HOST=localhost
+ENV POSTGRES_PORT=5432
 
 COPY entrypoint.sh /usr/local/bin
 CMD ["entrypoint.sh"]
