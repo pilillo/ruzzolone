@@ -36,6 +36,13 @@ docker run --rm --name my-pgrouting \
 ruzzolone-raster:latest
 ```
 
+You can also use the Makefile to build and run the image, for instance:
+```
+make run-tegola
+```
+
+will be the same as running `make build-ruzzolone` followed by `make build-tegola` and a docker run on the resulting tegola image.
+
 Unless modified, the build process will download, convert and load the route map of Iceland.
 
 To run an example query you can use any PostgreSQL client, such as psql. 
@@ -97,3 +104,6 @@ which will return:
 * https://github.com/ajnisbet/opentopodata
 * https://www.opentopodata.org/server/
 * https://gis-ops.com/postgrest-postgis-api-tutorial-serve-digital-elevation-models/
+
+### OSM Tile Serving with Tegola
+* https://github.com/go-spatial/tegola-osm/
