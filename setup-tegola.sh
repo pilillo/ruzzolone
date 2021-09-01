@@ -16,6 +16,9 @@ psql -U $POSTGRES_USER -d $POSTGRES_DB -c "CREATE EXTENSION hstore;"
 ## using imposm3 - 2 phases
 ./imposm3/imposm3 import -connection ${POSTGIS_CONN_STRING} -mapping imposm3.json -read ./${PBFILE} -write
 ./imposm3/imposm3 import -connection ${POSTGIS_CONN_STRING} -mapping imposm3.json -deployproduction
+# cleanup
+rm -rf ./imposm3
+rm ${PBFILE}
 
 # 4. Import OSM Land dataset 
 # taken from: https://raw.githubusercontent.com/go-spatial/tegola-osm/master/osm_land.sh
@@ -25,11 +28,6 @@ psql -U $POSTGRES_USER -d $POSTGRES_DB -c "CREATE EXTENSION hstore;"
 # 	- psql: PostgreSQL client
 #	- ogr2ogr: GDAL vector lib
 #	- unzip: decompression util
-#
-# Usage
-# 	Set the database connection variables, then run
-#
-#		./osm_land.sh
 #
 # Important
 #	- The tegola config file is expecting these layers to be in the same database as the rest of the OSM data imported using imposm3
